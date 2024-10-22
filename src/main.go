@@ -10,7 +10,7 @@ import (
 var TPS int = 50
 
 const (
-	APP_VERSION       = "0.0.2"
+	APP_VERSION       = "0.0.3"
 	IS_DEBUGGING      = false
 	SCREEN_WIDTH  int = 1024
 	SCREEN_HEIGHT int = 768

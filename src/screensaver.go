@@ -23,8 +23,8 @@ func NewScreenSaver() *ScreenSaver {
 	return &ScreenSaver{
 		xPos:        1,
 		yPos:        1,
-		xDelta:      2,
-		yDelta:      2,
+		xDelta:      3,
+		yDelta:      3,
 		boxSize:     20,
 		red:         uint8(rand.IntN(255)),
 		green:       uint8(rand.IntN(255)),
@@ -51,11 +51,11 @@ func randomDelta() int8 {
 func (g *ScreenSaver) updateColour() {
 	updateAndCheckLimits(&g.red, &g.redDelta)
 
-	if g.red > 128 {
+	if g.red > 64 {
 		updateAndCheckLimits(&g.green, &g.greenDelta)
 	}
 
-	if g.green > 128 {
+	if g.green > 64 {
 		updateAndCheckLimits(&g.blue, &g.blueDelta)
 	}
 
@@ -107,7 +107,9 @@ func (g *ScreenSaver) Update() error {
 
 // ----------------------------------------------------------------------------
 func (g *ScreenSaver) Draw(screen *ebiten.Image) {
+
 	vector.DrawFilledRect(g.ebitenImage, g.xPos, g.yPos, g.boxSize, g.boxSize, color.RGBA{R: g.red, G: g.green, B: g.blue, A: g.alpha}, true)
+	vector.StrokeRect(g.ebitenImage, g.xPos, g.yPos, g.boxSize, g.boxSize, 1.0, color.Black, true)
 
 	var ops = &ebiten.DrawImageOptions{}
 	screen.DrawImage(g.ebitenImage, ops)
