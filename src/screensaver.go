@@ -50,8 +50,14 @@ func randomDelta() int8 {
 // ----------------------------------------------------------------------------
 func (g *ScreenSaver) updateColour() {
 	updateAndCheckLimits(&g.red, &g.redDelta)
-	updateAndCheckLimits(&g.green, &g.greenDelta)
-	updateAndCheckLimits(&g.blue, &g.blueDelta)
+
+	if g.red > 128 {
+		updateAndCheckLimits(&g.green, &g.greenDelta)
+	}
+
+	if g.green > 128 {
+		updateAndCheckLimits(&g.blue, &g.blueDelta)
+	}
 
 	// handle alpha a bit differently, to add some randomness
 	if g.aplhaDelta > 0 {
@@ -60,7 +66,7 @@ func (g *ScreenSaver) updateColour() {
 		g.alpha -= 1
 	}
 
-	if g.alpha <= 1 || g.alpha >= 254 {
+	if g.alpha <= 1 || g.alpha >= 75 {
 		g.aplhaDelta *= -1
 		g.blueDelta = randomDelta()
 		g.redDelta = randomDelta()
