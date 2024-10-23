@@ -8,6 +8,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
+var COLOUR_DARK_GRAY = color.RGBA{R: 128, G: 128, B: 128, A: 255}
+
 // ----------------------------------------------------------------------------
 type ScreenSaver struct {
 	xPos, yPos                                  float32
@@ -25,11 +27,11 @@ func NewScreenSaver() *ScreenSaver {
 		yPos:        1,
 		xDelta:      3,
 		yDelta:      3,
-		size:        20,
+		size:        12,
 		red:         uint8(rand.IntN(255)),
 		green:       uint8(rand.IntN(255)),
 		blue:        uint8(rand.IntN(255)),
-		alpha:       uint8(rand.IntN(255)),
+		alpha:       uint8(rand.IntN(100)),
 		redDelta:    randomDelta(),
 		greenDelta:  randomDelta(),
 		blueDelta:   randomDelta(),
@@ -50,14 +52,8 @@ func randomDelta() int8 {
 // ----------------------------------------------------------------------------
 func (g *ScreenSaver) updateColour() {
 	updateColourValueWithinLimits(&g.red, &g.redDelta)
-
-	if g.red > 64 {
-		updateColourValueWithinLimits(&g.green, &g.greenDelta)
-	}
-
-	if g.green > 64 {
-		updateColourValueWithinLimits(&g.blue, &g.blueDelta)
-	}
+	updateColourValueWithinLimits(&g.green, &g.greenDelta)
+	updateColourValueWithinLimits(&g.blue, &g.blueDelta)
 
 	// handle alpha a bit differently, to add some randomness
 	if g.alphaDelta > 0 {
@@ -66,11 +62,8 @@ func (g *ScreenSaver) updateColour() {
 		g.alpha -= 1
 	}
 
-	if g.alpha <= 1 || g.alpha >= 75 {
+	if g.alpha <= 5 || g.alpha >= 95 {
 		g.alphaDelta *= -1
-		g.blueDelta = randomDelta()
-		g.redDelta = randomDelta()
-		g.greenDelta = randomDelta()
 	}
 }
 
@@ -82,7 +75,7 @@ func updateColourValueWithinLimits(colour *uint8, change *int8) {
 		*colour -= 1
 	}
 
-	if *colour <= 1 || *colour >= 254 {
+	if *colour <= 1 || *colour >= 250 {
 		*change *= -1
 	}
 }
@@ -108,8 +101,11 @@ func (g *ScreenSaver) Update() error {
 // ----------------------------------------------------------------------------
 func (g *ScreenSaver) Draw(screen *ebiten.Image) {
 
-	vector.DrawFilledRect(g.ebitenImage, g.xPos, g.yPos, g.size, g.size, color.RGBA{R: g.red, G: g.green, B: g.blue, A: g.alpha}, true)
-	vector.StrokeRect(g.ebitenImage, g.xPos, g.yPos, g.size, g.size, 1.0, color.Black, true)
+	// vector.DrawFilledRect(g.ebitenImage, g.xPos, g.yPos, g.size, g.size, color.RGBA{R: g.red, G: g.green, B: g.blue, A: g.alpha}, true)
+	// vector.StrokeRect(g.ebitenImage, g.xPos, g.yPos, g.size, g.size, 1.0, color.Black, true)
+
+	vector.DrawFilledCircle(g.ebitenImage, g.xPos, g.yPos, g.size, color.RGBA{R: g.red, G: g.green, B: g.blue, A: g.alpha}, true)
+	vector.StrokeCircle(g.ebitenImage, g.xPos, g.yPos, g.size, 0.25, COLOUR_DARK_GRAY, true)
 
 	var ops = &ebiten.DrawImageOptions{}
 	screen.DrawImage(g.ebitenImage, ops)
