@@ -7,24 +7,35 @@ import (
 )
 
 // ----------------------------------------------------------------------------
-var TPS int = 50
-
 const (
-	APP_VERSION       = "0.0.3"
-	IS_DEBUGGING      = false
-	SCREEN_WIDTH  int = 1024
-	SCREEN_HEIGHT int = 768
+	APP_VERSION          = "0.0.4"
+	IS_DEBUGGING         = false
+	SCREEN_WIDTH     int = 1024
+	SCREEN_HEIGHT    int = 768
+	TICKS_PER_SECOND int = 50
 )
+
+// -------------------------------------------------------------------------
+func setupWindow() error {
+	ebiten.SetWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT)
+	ebiten.SetWindowTitle("Old School " + APP_VERSION)
+	ebiten.SetTPS(TICKS_PER_SECOND)
+
+	return nil
+}
+
+// -------------------------------------------------------------------------
+func RunOldSchoolScreenSaver() error {
+	if err := setupWindow(); err != nil {
+		return err
+	}
+
+	return ebiten.RunGame(NewScreenSaver())
+}
 
 // ----------------------------------------------------------------------------
 func main() {
-	ebiten.SetWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT)
-	ebiten.SetWindowTitle("Old School " + APP_VERSION)
-	ebiten.SetTPS(TPS)
-
-	err := ebiten.RunGame(NewScreenSaver())
-
-	if err != nil {
-		log.Fatal(err)
+	if err := RunOldSchoolScreenSaver(); err != nil {
+		log.Fatalf("Error running screensaver: %v", err)
 	}
 }

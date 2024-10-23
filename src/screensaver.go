@@ -11,10 +11,10 @@ import (
 // ----------------------------------------------------------------------------
 type ScreenSaver struct {
 	xPos, yPos                                  float32
-	boxSize                                     float32
+	size                                        float32
 	xDelta, yDelta                              float32
 	red, green, blue, alpha                     uint8
-	redDelta, greenDelta, blueDelta, aplhaDelta int8
+	redDelta, greenDelta, blueDelta, alphaDelta int8
 	ebitenImage                                 *ebiten.Image
 }
 
@@ -25,7 +25,7 @@ func NewScreenSaver() *ScreenSaver {
 		yPos:        1,
 		xDelta:      3,
 		yDelta:      3,
-		boxSize:     20,
+		size:        20,
 		red:         uint8(rand.IntN(255)),
 		green:       uint8(rand.IntN(255)),
 		blue:        uint8(rand.IntN(255)),
@@ -33,7 +33,7 @@ func NewScreenSaver() *ScreenSaver {
 		redDelta:    randomDelta(),
 		greenDelta:  randomDelta(),
 		blueDelta:   randomDelta(),
-		aplhaDelta:  randomDelta(),
+		alphaDelta:  randomDelta(),
 		ebitenImage: ebiten.NewImage(SCREEN_WIDTH, SCREEN_HEIGHT),
 	}
 }
@@ -49,25 +49,25 @@ func randomDelta() int8 {
 
 // ----------------------------------------------------------------------------
 func (g *ScreenSaver) updateColour() {
-	updateAndCheckLimits(&g.red, &g.redDelta)
+	updateColourValueWithinLimits(&g.red, &g.redDelta)
 
 	if g.red > 64 {
-		updateAndCheckLimits(&g.green, &g.greenDelta)
+		updateColourValueWithinLimits(&g.green, &g.greenDelta)
 	}
 
 	if g.green > 64 {
-		updateAndCheckLimits(&g.blue, &g.blueDelta)
+		updateColourValueWithinLimits(&g.blue, &g.blueDelta)
 	}
 
 	// handle alpha a bit differently, to add some randomness
-	if g.aplhaDelta > 0 {
+	if g.alphaDelta > 0 {
 		g.alpha += 1
 	} else {
 		g.alpha -= 1
 	}
 
 	if g.alpha <= 1 || g.alpha >= 75 {
-		g.aplhaDelta *= -1
+		g.alphaDelta *= -1
 		g.blueDelta = randomDelta()
 		g.redDelta = randomDelta()
 		g.greenDelta = randomDelta()
@@ -75,7 +75,7 @@ func (g *ScreenSaver) updateColour() {
 }
 
 // ----------------------------------------------------------------------------
-func updateAndCheckLimits(colour *uint8, change *int8) {
+func updateColourValueWithinLimits(colour *uint8, change *int8) {
 	if *change > 0 {
 		*colour += 1
 	} else {
@@ -92,11 +92,11 @@ func (g *ScreenSaver) Update() error {
 	g.xPos += g.xDelta
 	g.yPos += g.yDelta
 
-	if g.xPos <= 0 || g.xPos >= float32(SCREEN_WIDTH)-g.boxSize {
+	if g.xPos <= 0 || g.xPos >= float32(SCREEN_WIDTH)-g.size {
 		g.xDelta *= -1
 	}
 
-	if g.yPos <= 0 || g.yPos >= float32(SCREEN_HEIGHT)-g.boxSize {
+	if g.yPos <= 0 || g.yPos >= float32(SCREEN_HEIGHT)-g.size {
 		g.yDelta *= -1
 	}
 
@@ -108,8 +108,8 @@ func (g *ScreenSaver) Update() error {
 // ----------------------------------------------------------------------------
 func (g *ScreenSaver) Draw(screen *ebiten.Image) {
 
-	vector.DrawFilledRect(g.ebitenImage, g.xPos, g.yPos, g.boxSize, g.boxSize, color.RGBA{R: g.red, G: g.green, B: g.blue, A: g.alpha}, true)
-	vector.StrokeRect(g.ebitenImage, g.xPos, g.yPos, g.boxSize, g.boxSize, 1.0, color.Black, true)
+	vector.DrawFilledRect(g.ebitenImage, g.xPos, g.yPos, g.size, g.size, color.RGBA{R: g.red, G: g.green, B: g.blue, A: g.alpha}, true)
+	vector.StrokeRect(g.ebitenImage, g.xPos, g.yPos, g.size, g.size, 1.0, color.Black, true)
 
 	var ops = &ebiten.DrawImageOptions{}
 	screen.DrawImage(g.ebitenImage, ops)
