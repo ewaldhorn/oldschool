@@ -31,32 +31,20 @@ func NewScreenSaver() *ScreenSaver {
 }
 
 // ----------------------------------------------------------------------------
-func (s *ScreenSaver) performMove() bool {
+func (s *ScreenSaver) canPerformMove() bool {
 	mustUpdate := true
 
 	s.xPos += s.xDelta
 	s.yPos += s.yDelta
 
-	if s.xPos <= 0 {
-		s.xPos = 1
+	if s.xPos <= 0 || s.xPos >= float32(SCREEN_WIDTH)-s.size {
+		s.xPos = clampFloat32(s.xPos, 0, float32(SCREEN_WIDTH)-s.size)
 		s.xDelta *= -1
 		mustUpdate = false
 	}
 
-	if s.yPos <= 0 {
-		s.yPos = 1
-		s.yDelta *= -1
-		mustUpdate = false
-	}
-
-	if s.xPos >= float32(SCREEN_WIDTH)-s.size {
-		s.xPos = float32(SCREEN_WIDTH) - s.size
-		s.xDelta *= -1
-		mustUpdate = false
-	}
-
-	if s.yPos >= float32(SCREEN_HEIGHT)-s.size {
-		s.yPos = float32(SCREEN_HEIGHT) - s.size
+	if s.yPos <= 0 || s.yPos >= float32(SCREEN_HEIGHT)-s.size {
+		s.yPos = clampFloat32(s.yPos, 0, float32(SCREEN_HEIGHT)-s.size)
 		s.yDelta *= -1
 		mustUpdate = false
 	}
@@ -66,7 +54,7 @@ func (s *ScreenSaver) performMove() bool {
 
 // ----------------------------------------------------------------------------
 func (s *ScreenSaver) updatePosition() {
-	if s.performMove() {
+	if s.canPerformMove() {
 		if s.xPos <= 0 || s.xPos >= float32(SCREEN_WIDTH)-s.size {
 			s.xDelta *= -1
 		}

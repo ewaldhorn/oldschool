@@ -8,7 +8,7 @@ import (
 
 // ----------------------------------------------------------------------------
 const (
-	APP_VERSION           = "0.0.7"
+	APP_VERSION           = "0.0.8"
 	SCREEN_WIDTH     int  = 1024
 	SCREEN_HEIGHT    int  = 768
 	TICKS_PER_SECOND int  = 50
