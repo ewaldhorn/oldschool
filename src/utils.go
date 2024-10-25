@@ -7,6 +7,10 @@ func clampFloat32(value, min, max float32) float32 {
 		panic("min must less than max")
 	}
 
+	if min == max {
+		return min
+	}
+
 	if value <= min {
 		return min
 	}

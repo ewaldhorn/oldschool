@@ -5,9 +5,9 @@ import "math/rand/v2"
 // ----------------------------------------------------------------------------
 func randomDelta() int8 {
 	if rand.IntN(500) > 250 {
-		return -1
-	} else {
 		return 1
+	} else {
+		return -1
 	}
 }
 

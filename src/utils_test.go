@@ -14,6 +14,7 @@ func Test_clampFloat32(t *testing.T) {
 		{"one", 1, 1, 5, 1},
 		{"five", 5, 1, 8, 5},
 		{"eleven", 18, 5, 11, 11},
+		{"twelve", 18, 12, 12, 12},
 	}
 
 	for _, test := range tests {

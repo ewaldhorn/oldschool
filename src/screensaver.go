@@ -1,12 +1,15 @@
 package main
 
 import (
+	"github.com/hajimehoshi/bitmapfont/v3"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 // ----------------------------------------------------------------------------
 var ops = &ebiten.DrawImageOptions{}
+var fontFace = text.NewGoXFace(bitmapfont.Face)
 
 // ----------------------------------------------------------------------------
 type ScreenSaver struct {
@@ -106,6 +109,16 @@ func (s *ScreenSaver) Draw(screen *ebiten.Image) {
 	vector.DrawFilledCircle(s.ebitenImage, s.xPos, s.yPos, s.size, s.colour.toColour(), true)
 
 	screen.DrawImage(s.ebitenImage, ops)
+
+	if !ebiten.IsFocused() {
+		textOp := &text.DrawOptions{}
+
+		str := "Click me to interact"
+		tw, th := text.Measure(str, fontFace, textOp.LineSpacing)
+		textOp.GeoM.Translate(float64(SCREEN_WIDTH)/2-(tw/2), float64(SCREEN_HEIGHT)/2-(th/2))
+		text.Draw(screen, str, fontFace, textOp)
+	}
+
 }
 
 // ----------------------------------------------------------------------------
