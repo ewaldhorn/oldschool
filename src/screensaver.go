@@ -31,21 +31,21 @@ func NewScreenSaver() *ScreenSaver {
 }
 
 // ----------------------------------------------------------------------------
-func (g *ScreenSaver) performMove() bool {
+func (s *ScreenSaver) performMove() bool {
 	status := true
 
-	g.xPos += g.xDelta
-	g.yPos += g.yDelta
+	s.xPos += s.xDelta
+	s.yPos += s.yDelta
 
-	if g.xPos <= 0 {
-		g.xPos = 1
-		g.xDelta *= -1
+	if s.xPos <= 0 {
+		s.xPos = 1
+		s.xDelta *= -1
 		status = false
 	}
 
-	if g.yPos <= 0 {
-		g.yPos = 1
-		g.yDelta *= -1
+	if s.yPos <= 0 {
+		s.yPos = 1
+		s.yDelta *= -1
 		status = false
 	}
 
@@ -53,35 +53,35 @@ func (g *ScreenSaver) performMove() bool {
 }
 
 // ----------------------------------------------------------------------------
-func (g *ScreenSaver) updatePosition() {
-	if g.performMove() {
-		if g.xPos <= 0 || g.xPos >= float32(SCREEN_WIDTH)-g.size {
-			g.xDelta *= -1
+func (s *ScreenSaver) updatePosition() {
+	if s.performMove() {
+		if s.xPos <= 0 || s.xPos >= float32(SCREEN_WIDTH)-s.size {
+			s.xDelta *= -1
 		}
 
-		if g.yPos <= 0 || g.yPos >= float32(SCREEN_HEIGHT)-g.size {
-			g.yDelta *= -1
+		if s.yPos <= 0 || s.yPos >= float32(SCREEN_HEIGHT)-s.size {
+			s.yDelta *= -1
 		}
 	}
 }
 
 // ----------------------------------------------------------------------------
-func (g *ScreenSaver) Update() error {
+func (s *ScreenSaver) Update() error {
 
-	g.updatePosition()
-	g.colour.updateColour()
+	s.updatePosition()
+	s.colour.updateColour()
 
 	return nil
 }
 
 // ----------------------------------------------------------------------------
-func (g *ScreenSaver) Draw(screen *ebiten.Image) {
-	vector.DrawFilledCircle(g.ebitenImage, g.xPos, g.yPos, g.size, g.colour.toColour(), true)
+func (s *ScreenSaver) Draw(screen *ebiten.Image) {
+	vector.DrawFilledCircle(s.ebitenImage, s.xPos, s.yPos, s.size, s.colour.toColour(), true)
 
-	screen.DrawImage(g.ebitenImage, ops)
+	screen.DrawImage(s.ebitenImage, ops)
 }
 
 // ----------------------------------------------------------------------------
-func (g *ScreenSaver) Layout(outsideWidth, outsideHeight int) (int, int) {
+func (s *ScreenSaver) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return SCREEN_WIDTH, SCREEN_HEIGHT
 }
