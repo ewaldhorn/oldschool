@@ -32,7 +32,7 @@ func NewScreenSaver() *ScreenSaver {
 
 // ----------------------------------------------------------------------------
 func (s *ScreenSaver) performMove() bool {
-	status := true
+	mustUpdate := true
 
 	s.xPos += s.xDelta
 	s.yPos += s.yDelta
@@ -40,16 +40,28 @@ func (s *ScreenSaver) performMove() bool {
 	if s.xPos <= 0 {
 		s.xPos = 1
 		s.xDelta *= -1
-		status = false
+		mustUpdate = false
 	}
 
 	if s.yPos <= 0 {
 		s.yPos = 1
 		s.yDelta *= -1
-		status = false
+		mustUpdate = false
 	}
 
-	return status
+	if s.xPos >= float32(SCREEN_WIDTH)-s.size {
+		s.xPos = float32(SCREEN_WIDTH) - s.size
+		s.xDelta *= -1
+		mustUpdate = false
+	}
+
+	if s.yPos >= float32(SCREEN_HEIGHT)-s.size {
+		s.yPos = float32(SCREEN_HEIGHT) - s.size
+		s.yDelta *= -1
+		mustUpdate = false
+	}
+
+	return mustUpdate
 }
 
 // ----------------------------------------------------------------------------
@@ -66,8 +78,35 @@ func (s *ScreenSaver) updatePosition() {
 }
 
 // ----------------------------------------------------------------------------
-func (s *ScreenSaver) Update() error {
+func (s *ScreenSaver) checkForKeys() {
+	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
+		if s.xDelta > 0 {
+			s.xDelta *= -1
+		}
+	}
 
+	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
+		if s.xDelta < 0 {
+			s.xDelta *= -1
+		}
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
+		if s.yDelta > 0 {
+			s.yDelta *= -1
+		}
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
+		if s.yDelta < 0 {
+			s.yDelta *= -1
+		}
+	}
+}
+
+// ----------------------------------------------------------------------------
+func (s *ScreenSaver) Update() error {
+	s.checkForKeys()
 	s.updatePosition()
 	s.colour.updateColour()
 
