@@ -1,26 +1,22 @@
 package main
 
 import (
-	"image/color"
-	"math/rand/v2"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
-var COLOUR_DARK_GRAY = color.RGBA{R: 128, G: 128, B: 128, A: 255}
+// ----------------------------------------------------------------------------
+var ops = &ebiten.DrawImageOptions{}
 
 // ----------------------------------------------------------------------------
 type ScreenSaver struct {
-	xPos, yPos                                  float32
-	size                                        float32
-	xDelta, yDelta                              float32
-	red, green, blue, alpha                     uint8
-	redDelta, greenDelta, blueDelta, alphaDelta int8
-	ebitenImage                                 *ebiten.Image
+	xPos, yPos     float32
+	size           float32
+	xDelta, yDelta float32
+	colour         Colour
+	ebitenImage    *ebiten.Image
 }
 
-// ----------------------------------------------------------------------------
 func NewScreenSaver() *ScreenSaver {
 	return &ScreenSaver{
 		xPos:        1,
@@ -28,42 +24,26 @@ func NewScreenSaver() *ScreenSaver {
 		xDelta:      3,
 		yDelta:      3,
 		size:        12,
-		red:         uint8(rand.IntN(255)),
-		green:       uint8(rand.IntN(255)),
-		blue:        uint8(rand.IntN(255)),
-		alpha:       uint8(rand.IntN(100)),
-		redDelta:    randomDelta(),
-		greenDelta:  randomDelta(),
-		blueDelta:   randomDelta(),
-		alphaDelta:  randomDelta(),
+		colour:      CreateNewRandomColourStruct(),
 		ebitenImage: ebiten.NewImage(SCREEN_WIDTH, SCREEN_HEIGHT),
 	}
 }
 
 // ----------------------------------------------------------------------------
-func randomDelta() int8 {
-	if rand.IntN(500) > 250 {
-		return -1
-	} else {
-		return 1
-	}
-}
-
-// ----------------------------------------------------------------------------
 func (g *ScreenSaver) updateColour() {
-	updateColourValueWithinLimits(&g.red, &g.redDelta)
-	updateColourValueWithinLimits(&g.green, &g.greenDelta)
-	updateColourValueWithinLimits(&g.blue, &g.blueDelta)
+	updateColourValueWithinLimits(&g.colour.red, &g.colour.redDelta)
+	updateColourValueWithinLimits(&g.colour.green, &g.colour.greenDelta)
+	updateColourValueWithinLimits(&g.colour.blue, &g.colour.blueDelta)
 
 	// handle alpha a bit differently, to add some randomness
-	if g.alphaDelta > 0 {
-		g.alpha += 1
+	if g.colour.alphaDelta > 0 {
+		g.colour.alpha += 1
 	} else {
-		g.alpha -= 1
+		g.colour.alpha -= 1
 	}
 
-	if g.alpha <= 5 || g.alpha >= 95 {
-		g.alphaDelta *= -1
+	if g.colour.alpha <= 5 || g.colour.alpha >= 95 {
+		g.colour.alphaDelta *= -1
 	}
 }
 
@@ -100,14 +80,8 @@ func (g *ScreenSaver) Update() error {
 
 // ----------------------------------------------------------------------------
 func (g *ScreenSaver) Draw(screen *ebiten.Image) {
+	vector.DrawFilledCircle(g.ebitenImage, g.xPos, g.yPos, g.size, g.colour.toColour(), true)
 
-	// vector.DrawFilledRect(g.ebitenImage, g.xPos, g.yPos, g.size, g.size, color.RGBA{R: g.red, G: g.green, B: g.blue, A: g.alpha}, true)
-	// vector.StrokeRect(g.ebitenImage, g.xPos, g.yPos, g.size, g.size, 1.0, color.Black, true)
-
-	vector.DrawFilledCircle(g.ebitenImage, g.xPos, g.yPos, g.size, color.RGBA{R: g.red, G: g.green, B: g.blue, A: g.alpha}, true)
-	vector.StrokeCircle(g.ebitenImage, g.xPos, g.yPos, g.size, 0.25, COLOUR_DARK_GRAY, true)
-
-	var ops = &ebiten.DrawImageOptions{}
 	screen.DrawImage(g.ebitenImage, ops)
 }
 
