@@ -17,12 +17,13 @@ type ScreenSaver struct {
 	ebitenImage    *ebiten.Image
 }
 
+// ----------------------------------------------------------------------------
 func NewScreenSaver() *ScreenSaver {
 	return &ScreenSaver{
-		xPos:        1,
-		yPos:        1,
-		xDelta:      3,
-		yDelta:      3,
+		xPos:        -5,
+		yPos:        -5,
+		xDelta:      4,
+		yDelta:      4,
 		size:        12,
 		colour:      CreateNewRandomColourStruct(),
 		ebitenImage: ebiten.NewImage(SCREEN_WIDTH, SCREEN_HEIGHT),
@@ -30,50 +31,45 @@ func NewScreenSaver() *ScreenSaver {
 }
 
 // ----------------------------------------------------------------------------
-func (g *ScreenSaver) updateColour() {
-	updateColourValueWithinLimits(&g.colour.red, &g.colour.redDelta)
-	updateColourValueWithinLimits(&g.colour.green, &g.colour.greenDelta)
-	updateColourValueWithinLimits(&g.colour.blue, &g.colour.blueDelta)
+func (g *ScreenSaver) performMove() bool {
+	status := true
 
-	// handle alpha a bit differently, to add some randomness
-	if g.colour.alphaDelta > 0 {
-		g.colour.alpha += 1
-	} else {
-		g.colour.alpha -= 1
+	g.xPos += g.xDelta
+	g.yPos += g.yDelta
+
+	if g.xPos <= 0 {
+		g.xPos = 1
+		g.xDelta *= -1
+		status = false
 	}
 
-	if g.colour.alpha <= 5 || g.colour.alpha >= 95 {
-		g.colour.alphaDelta *= -1
+	if g.yPos <= 0 {
+		g.yPos = 1
+		g.yDelta *= -1
+		status = false
 	}
+
+	return status
 }
 
 // ----------------------------------------------------------------------------
-func updateColourValueWithinLimits(colour *uint8, change *int8) {
-	if *change > 0 {
-		*colour += 1
-	} else {
-		*colour -= 1
-	}
+func (g *ScreenSaver) updatePosition() {
+	if g.performMove() {
+		if g.xPos <= 0 || g.xPos >= float32(SCREEN_WIDTH)-g.size {
+			g.xDelta *= -1
+		}
 
-	if *colour <= 1 || *colour >= 250 {
-		*change *= -1
+		if g.yPos <= 0 || g.yPos >= float32(SCREEN_HEIGHT)-g.size {
+			g.yDelta *= -1
+		}
 	}
 }
 
 // ----------------------------------------------------------------------------
 func (g *ScreenSaver) Update() error {
-	g.xPos += g.xDelta
-	g.yPos += g.yDelta
 
-	if g.xPos <= 0 || g.xPos >= float32(SCREEN_WIDTH)-g.size {
-		g.xDelta *= -1
-	}
-
-	if g.yPos <= 0 || g.yPos >= float32(SCREEN_HEIGHT)-g.size {
-		g.yDelta *= -1
-	}
-
-	g.updateColour()
+	g.updatePosition()
+	g.colour.updateColour()
 
 	return nil
 }
